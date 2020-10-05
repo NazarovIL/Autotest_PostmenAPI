@@ -1,0 +1,3119 @@
+{
+	"info": {
+		"_postman_id": "5848dce2-8441-462f-8ce0-5559d5c68300",
+		"name": "Autotest WeatherAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Current weather data for one location by Name and Country",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e80df24e-4b7c-481c-947e-a5f1d158be23",
+						"exec": [
+							"pm.environment.clear()  // Очистка среды\r",
+							"\r",
+							"pm.environment.set(\"WeatherAPI\", \"api.openweathermap.org/data/2.5/\")\r",
+							"pm.environment.set(\"city_name\", \"Los Angeles\");\r",
+							"pm.environment.set(\"country code\",\"US\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "07bc3645-75f8-4f40-9bae-fcc56eae74cb",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Test data type of the response\", function(){\r",
+							"  pm.expect(jsonData).to.be.an(\"object\");\r",
+							"  pm.expect(jsonData.coord).to.be.an(\"object\");\r",
+							"  pm.expect(jsonData.coord.lon).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.coord.lat).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.weather).to.be.an(\"array\");\r",
+							"  pm.expect(jsonData.base).to.be.a(\"string\");\r",
+							"  pm.expect(jsonData.main).to.be.an(\"object\");\r",
+							"  pm.expect(jsonData.main.temp).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.main.feels_like).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.main.temp_min).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.main.temp_max).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.main.pressure).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.main.humidity).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.visibility).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.wind).to.be.a(\"object\"); \r",
+							"  pm.expect(jsonData.wind.speed).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.wind.deg).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.clouds).to.be.an(\"object\"); \r",
+							"  pm.expect(jsonData.clouds.all).to.be.a(\"number\"); \r",
+							"  pm.expect(jsonData.dt).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.sys).to.be.an(\"object\");\r",
+							"  pm.expect(jsonData.sys.type).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.sys.id).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.sys.country).to.be.a(\"string\");\r",
+							"  pm.expect(jsonData.sys.sunrise).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.sys.sunset).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.timezone).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.id).to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.name).to.be.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"//сравнение ожидаемого параметра с пришедшим в запросе \r",
+							"pm.test(\"Body contains name city: \" + pm.environment.get(\"city_name\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"city_name\"));\r",
+							"    pm.environment.set(\"lon\", jsonData.coord.lon);\r",
+							"    pm.environment.set(\"lat\", jsonData.coord.lat);\r",
+							"    pm.environment.set(\"id\", jsonData.id);\r",
+							"});\r",
+							"\r",
+							"if(pm.environment.get(\"country code\")!=0){\r",
+							"    pm.test(\"Body contains country \" + pm.environment.get(\"country code\"), function () {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData.sys.country).to.eql(pm.environment.get(\"country code\").toUpperCase());\r",
+							"    });\r",
+							"}\r",
+							"else{\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"country code\", jsonData.sys.country);\r",
+							"}\r",
+							"\r",
+							"//Извлечение дополнительных переменных из ответа\r",
+							"//var jsonData = pm.response.json();\r",
+							"pm.expect(jsonData.name).to.eql(pm.environment.get(\"city_name\"));\r",
+							"pm.environment.set(\"lon\", jsonData.coord.lon);\r",
+							"pm.environment.set(\"lat\", jsonData.coord.lat);\r",
+							"pm.environment.set(\"id\", jsonData.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}weather?q={{city_name}},{{country code}}",
+					"host": [
+						"{{WeatherAPI}}weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}},{{country code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e80df24e-4b7c-481c-947e-a5f1d158be23",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "07bc3645-75f8-4f40-9bae-fcc56eae74cb",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//сравнение ожидаемого параметра с пришедшим в запросе \r",
+							"pm.test(\"Body contains name city \" + pm.environment.get(\"city_name\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"city_name\"));\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by Name and Countrydo not match",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7619cffa-191f-4edd-91d7-c06f99179d5b",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"\r",
+							"if (pm.environment.get(\"country code\") == 'it'){\r",
+							"  pm.environment.set(\"False country code\",'zu');\r",
+							"}\r",
+							"else{\r",
+							"    pm.environment.set(\"False country code\",'it');\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "07afbceb-fc82-4844-8e02-932b36bc0222",
+						"exec": [
+							"//статус ответа 404\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"City ​​name (\"+pm.environment.get(\"city_name\")+\") and country (\" + pm.environment.get(\"False country code\") +\") do not match\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"city not found\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}},{{False country code}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}},{{False country code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by False Name City",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bdd72e8c-58cb-4234-9005-a5020f3491e0",
+						"exec": [
+							"pm.environment.set(\"false_city_name\", \"R\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ab13cda0-a46c-4bbe-aaaa-b426573002ad",
+						"exec": [
+							"//статус ответа 404\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Wrong city name: \" + pm.environment.get(\"false_city_name\"), function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"city not found\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{false_city_name}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{false_city_name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by No Name City",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e6109c18-965d-40ad-9035-423d33b232d5",
+						"exec": [
+							"pm.environment.set(\"false_city_name\", \"\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0b5b7e3b-5e7b-4f74-a05b-36ad45d62cba",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"No city name specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Nothing to geocode\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{false_city_name}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{false_city_name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by Not API key",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9f58f0ae-c591-479a-ba5c-4bf5c064963b",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4107b90f-cf4e-4ad5-942c-6958c8f065c9",
+						"exec": [
+							"//статус ответа 401\r",
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"No API key specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Invalid API key. Please see http://openweathermap.org/faq#error401 for more info.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by ID City",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1b143be7-89bd-4b9f-8a23-dfa11554c987",
+						"exec": [
+							"if (pm.environment.get(\"id\") == null){\r",
+							"    pm.environment.set(\"id\", 2643743);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"country code\") == null){\r",
+							"    pm.environment.set(\"country code\",\"GB\");\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0577200d-b808-4d56-88df-a5a5ef69f4e9",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//сравнение ожидаемого параметра с пришедшим в запросе \r",
+							"pm.test(\"Body contains id city \" + pm.environment.get(\"id\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"id\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Body contains name city and country code: \"+ pm.environment.get(\"city_name\") + \" and \" + pm.environment.get(\"country code\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"city_name\"));\r",
+							"    pm.expect(jsonData.sys.country).to.eql(pm.environment.get(\"country code\").toUpperCase());\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?id={{id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by False ID City",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f9fc96a5-147d-41ab-8c13-011c37fe161e",
+						"exec": [
+							"pm.environment.set(\"False_id\", \"00001\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e2adc1d0-d142-4701-bdd3-1d0748795e24",
+						"exec": [
+							"//статус ответа 404\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Wrong id specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"city not found\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?id={{False_id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{False_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by Not ID City",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "62dcbb15-efd5-4fca-9898-22ddde0dd127",
+						"exec": [
+							"pm.environment.set(\"False_id\", \"\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6af2e8f-92c5-4702-8641-d648b6525cae",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"No id specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Nothing to geocode\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?id={{False_id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{False_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by GeoLocation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cfd9a454-9bce-4f95-a6ea-ef659ecf4432",
+						"exec": [
+							"if (pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"id\") == null){\r",
+							"    pm.environment.set(\"id\", 2643743);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"country code\") == null){\r",
+							"    pm.environment.set(\"country code\",\"GB\");\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a15fd98b-f3f6-4e30-a1d3-aae9aeabf935",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//сравнение ожидаемого параметра с пришедшим в запросе \r",
+							"pm.test(\"Body contains id city \" + pm.environment.get(\"id\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"id\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Body contains name city and country code: \"+ pm.environment.get(\"city_name\") + \" and \" + pm.environment.get(\"country code\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"city_name\"));\r",
+							"    pm.expect(jsonData.sys.country).to.eql(pm.environment.get(\"country code\").toUpperCase());\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?lat={{lat}}&lon={{lon}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by GeoLocation no longitude",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1aa748e1-badb-4936-85b6-b81d0c8a2a04",
+						"exec": [
+							"pm.environment.unset(\"False_lon\");\r",
+							"\r",
+							"if (pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d7f8dfd7-0d7f-4037-a7e0-5fa5816bf3b8",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Longitude not specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"wrong longitude\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?lat={{lat}}&lon={{False_lon}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{False_lon}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by GeoLocation no latitude",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4eb652b5-0461-474b-88be-5965044593fe",
+						"exec": [
+							"pm.environment.unset(\"False_lat\");\r",
+							"\r",
+							"if (pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0c40731a-fd63-48af-a504-835f97c4f517",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Latitude not specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"wrong latitude\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?lat={{False_lat}}&lon={{lon}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{False_lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by ZIP",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "25cb64b1-bd0d-4895-959d-4eb82e3b4417",
+						"exec": [
+							"pm.environment.set(\"zip_code\", 424000);\r",
+							"pm.environment.set(\"country code\", \"RU\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa213607-7fe1-4652-a9b1-a6e019e6ba14",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body contains country code\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.sys.country).to.eql(pm.environment.get(\"country code\").toUpperCase());\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?zip={{zip_code}},{{country code}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "zip",
+							"value": "{{zip_code}},{{country code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by ZIP No country",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "53440c55-2dce-40a3-98a3-8deaa7b0a754",
+						"exec": [
+							"pm.environment.set(\"zip_code\", 424000);\r",
+							"pm.environment.set(\"country code\", \"\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "fddabb2b-13cd-4c27-a988-bcb713461c7e",
+						"exec": [
+							"//статус ответа 404\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"City ​​by zip not found\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"city not found\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?zip={{zip_code}}{{country code}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "zip",
+							"value": "{{zip_code}}{{country code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for one location by ZIP Default US",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "43dabfef-d14f-4f49-9cfe-ff87835ef103",
+						"exec": [
+							"pm.environment.set(\"zip_code\", 94040);\r",
+							"pm.environment.set(\"country code\", \"\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "965e1807-ba9b-4a30-810c-0c280fa12ae4",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body contains country\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.sys.country).to.eql(\"US\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?zip={{zip_code}}{{country code}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "zip",
+							"value": "{{zip_code}}{{country code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities within a rectangle zone",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b0c25b3f-de3e-4699-8635-6877503e0995",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lon-left\", pm.environment.get(\"lon\")-2);\r",
+							"pm.environment.set(\"lat-bottom\", pm.environment.get(\"lat\")-2);\r",
+							"pm.environment.set(\"lon-right\", pm.environment.get(\"lon\")+2);\r",
+							"pm.environment.set(\"lat-top\", pm.environment.get(\"lat\")+2)\r",
+							"pm.environment.set(\"zoom\", 10);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f5b5972f-ebff-46d7-9d19-567b6220316c",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All addres in reclange zone\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    for (let i = 0; i<jsonData.cnt; i++){\r",
+							"        if (jsonData.list[i].coord.Lon >= pm.environment.get(\"lon-left\") && jsonData.list[i].coord.Lon <= pm.environment.get(\"lon-right\") && jsonData.list[i].coord.Lat >= pm.environment.get(\"lat-bottom\") && jsonData.list[i].coord.Lat <= pm.environment.get(\"lat-top\"))\r",
+							"            {\r",
+							"                continue;\r",
+							"            }\r",
+							"    else{return false;}\r",
+							"}});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/box/city?bbox={{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"box",
+						"city"
+					],
+					"query": [
+						{
+							"key": "bbox",
+							"value": "{{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities within a rectangle zone No coordinate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "538ec889-467c-4e2e-acc2-1d9fed01a3b3",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lon-left\", pm.environment.get(\"lon\")-2);\r",
+							"pm.environment.set(\"lat-bottom\", pm.environment.get(\"lat\")-2);\r",
+							"pm.environment.set(\"lon-right\", pm.environment.get(\"lon\")+2);\r",
+							"pm.environment.set(\"lat-top\", pm.environment.get(\"lat\")+2)\r",
+							"pm.environment.set(\"zoom\", 10);\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"lon-left\", 25);\r",
+							"pm.environment.set(\"lat-bottom\", 40);\r",
+							"pm.environment.set(\"lon-right\", 27);\r",
+							"pm.environment.unset(\"lat-top\")\r",
+							"pm.environment.set(\"zoom\", 10);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e217b604-7834-4a44-a6b8-861fcfddd7c1",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Error input parametrs\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"is not a float\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/box/city?bbox={{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"box",
+						"city"
+					],
+					"query": [
+						{
+							"key": "bbox",
+							"value": "{{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities within a Big rectangle zone",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "61064c8b-4da0-4202-a919-fab88623d664",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lon-left\", pm.environment.get(\"lon\")-3);\r",
+							"pm.environment.set(\"lat-bottom\", pm.environment.get(\"lat\")-3);\r",
+							"pm.environment.set(\"lon-right\", pm.environment.get(\"lon\")+3);\r",
+							"pm.environment.set(\"lat-top\", pm.environment.get(\"lat\")+3)\r",
+							"pm.environment.set(\"zoom\", 10);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d03bd5d-bbbb-4924-afb2-0029d32b6111",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Requested area is larger than 25\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Requested area is larger than allowed for your account type (25.00 square degrees)\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/box/city?bbox={{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"box",
+						"city"
+					],
+					"query": [
+						{
+							"key": "bbox",
+							"value": "{{lon-left}},{{lat-bottom}},{{lon-right}},{{lat-top}},{{zoom}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a4e86626-898d-4d6e-80c6-43876cbcfdbb",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"cnt\", 30);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "286398a6-f0f4-46b8-9b52-bb7f703df464",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The number of displayed cities is the same\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"cnt\"));\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by No coordinate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6a6b26a5-75e7-4b7f-8595-398f99e63dcf",
+						"exec": [
+							"pm.environment.set(\"lat-null\", \"\");\r",
+							"pm.environment.set(\"lon-null\", \"\");\r",
+							"\r",
+							"if (pm.environment.get(\"cnt\") == null){\r",
+							"    pm.environment.set(\"cnt\", 30);\r",
+							"};"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d3c10b42-f11a-44ac-b0b3-9329bfc061fe",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Coordinates not specified\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Nothing to geocode\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat-null}}&lon={{lon-null}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat-null}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon-null}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by default cnt",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "690ceefc-765b-430e-8968-d55af99e80fa",
+						"exec": [
+							"pm.environment.set(\"cnt\", \"\");\r",
+							"\r",
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "dd36380b-e7c8-4f1b-8888-2ae36932daf2",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"if (pm.environment.get(\"cnt\")!=\"\"){\r",
+							"    pm.test(\"The number of displayed cities is the same\", function () {\r",
+							"         var jsonData = pm.response.json();\r",
+							"         pm.expect(jsonData.count).to.eql(pm.environment.get(\"cnt\"));\r",
+							"});\r",
+							"}\r",
+							"else{pm.test(\"The number of displayed cities by default = 10\", function () {\r",
+							"         var jsonData = pm.response.json();\r",
+							"         pm.expect(jsonData.count).to.eql(pm.environment.get(10));\r",
+							"});\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by cnt = 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5553fafe-4bf4-45fb-ac90-9a4a0df576ec",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"cnt\", 1);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "10fe85c5-6056-421c-b08d-f0f70c673197",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The number of displayed cities is the same\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"cnt\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by cnt = 49",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "40831150-5e31-46e0-952e-240ca4e83624",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"cnt\", 49);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "52b35483-27e1-4feb-b990-4bb23a0c4e07",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The number of displayed cities is the same\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"cnt\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by cnt = 50",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "25b17b50-98f0-4a35-9507-971ba1fedfb9",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"cnt\", 50);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d61bb65-2a2e-436a-a3f2-c79332b54cb7",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The number of displayed cities is the same\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"cnt\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by cnt = 0",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "df0bdde2-91e9-4d99-99e2-4aab6d475db4",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"false_cnt\", 0);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "92af7089-959b-4821-8507-613cf7cfd354",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Cnt is not in the range from 1 to 50 \", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"cnt from 1 to 50\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{false_cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{false_cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several cities withinin circle by cnt = 51",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f7fa4a16-f665-4fd6-8b7d-7d576120a6da",
+						"exec": [
+							"if(pm.environment.get(\"lon\") == null){\r",
+							"    pm.environment.set(\"lon\", -0.13);\r",
+							"}\r",
+							"\r",
+							"if(pm.environment.get(\"lat\") == null){\r",
+							"    pm.environment.set(\"lat\", 51.51);\r",
+							"}\r",
+							"\r",
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"false_cnt\", 51);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "51647351-b943-458e-aa0c-7fc576cbb449",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"Cnt is not in the range from 1 to 50 \", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"cnt from 1 to 50\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/find?lat={{lat}}&lon={{lon}}&cnt={{false_cnt}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"find"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{lat}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}"
+						},
+						{
+							"key": "cnt",
+							"value": "{{false_cnt}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several city IDs",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6c5b7f1c-51a9-4af8-8244-48997937517e",
+						"exec": [
+							"pm.environment.set(\"group_id\",[524901,703448,2643743])"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7daf414-ee0f-4e50-ad2c-537a116b4312",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"The number of cities and id matches\", function() {\r",
+							"  pm.expect(jsonData.cnt).to.eql(pm.environment.get(\"group_id\").length);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/group?id={{group_id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"group"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{group_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several city IDs for 0 cities",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e98d83e6-ea14-4d02-af12-3ea403930ef9",
+						"exec": [
+							"pm.environment.set(\"group_id\",[])"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a2596a6c-2f8c-452b-8b0d-8bce5a6e4ed1",
+						"exec": [
+							"//статус ответа 404\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/group?id={{group_id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"group"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{group_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current weather data for several city IDs for cities > 20",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "968b8819-849c-4524-aaf1-16dc61b78234",
+						"exec": [
+							"pm.environment.set(\"group_id\",[2643743,5368361,5327489,5344994,5358736,5371261,7261268,5359488,5404794,5345071,5392400,5341114,5409768,5328041,5382496,5407841,5343858,5388867,5331835,5365937,5345038]);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d73985f-d799-4cff-96c3-0774de4bf123",
+						"exec": [
+							"//статус ответа 400\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"//поиск строки с описанием ожидаемой ошибки\r",
+							"pm.test(\"id list more than 20\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id list must be in range from 1 to 20\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WeatherAPI}}/group?id={{group_id}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"group"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{group_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Format XML",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "793f3ea3-4367-4475-ba62-5c16b90b1cff",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"mode\",\"xml\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "10ae1452-ab59-46fd-b4e3-bf0ea22500a7",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content is XML format\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/xml; charset=utf-8');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}&mode={{mode}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						},
+						{
+							"key": "mode",
+							"value": "{{mode}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Format JSON",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a1dd42a9-3647-4270-bbd9-36ac6b8f4d8f",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"mode\",\"\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c98d3ae2-72f9-40f1-9473-d34ef6426017",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content is JSON format\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json; charset=utf-8');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}&mode={{mode}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						},
+						{
+							"key": "mode",
+							"value": "{{mode}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Format HTML",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "2caaac15-7973-4ba5-8c9b-217593cd04d5",
+						"exec": [
+							"if (pm.environment.get(\"city_name\") == null){\r",
+							"    pm.environment.set(\"city_name\",\"London\");\r",
+							"}\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"mode\",\"html\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "7a4165f0-9086-4c53-b71f-36d48b6721a4",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content is HTML format\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('text/html; charset=utf-8');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}&mode={{mode}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						},
+						{
+							"key": "mode",
+							"value": "{{mode}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Multilingual support Russian",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a796b529-bddd-4e91-8f68-1aea43d92feb",
+						"exec": [
+							"pm.environment.set(\"city_name\",\"London\");\r",
+							"pm.environment.set(\"lang\",\"ru\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3480d706-b554-4006-887c-924c66d1248d",
+						"exec": [
+							"//статус ответа 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//сравнение ожидаемого параметра с пришедшим в запросе \r",
+							"pm.test(\"Data on russian language\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"Лондон\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "6893763bc209b571a26e2e1f125e9b1f",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{WeatherAPI}}/weather?q={{city_name}}&lang={{lang}}",
+					"host": [
+						"{{WeatherAPI}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city_name}}"
+						},
+						{
+							"key": "lang",
+							"value": "{{lang}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a20aa789-7432-4501-9bfe-8768de147d1b",
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.environment.get(\"WeatherAPI\") == null){",
+					"    pm.environment.set(\"WeatherAPI\", \"api.openweathermap.org/data/2.5/\");",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9cb42a4a-1d53-4f1c-af63-e87967b44d6b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
